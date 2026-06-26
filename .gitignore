@@ -1,0 +1,9 @@
+__pycache__/
+.venv/
+
+credentials/
+list/
+videos/
+log/
+
+token.json
