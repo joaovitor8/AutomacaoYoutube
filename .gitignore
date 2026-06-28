@@ -6,7 +6,8 @@ credentials/
 list/astronautium
 list/outro_canal
 
-profiles/
+profiles/astronautium.py
+
 videos/
 
 tokens/

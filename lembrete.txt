@@ -1,0 +1,6 @@
+Criar pasta "credentials" e pegar a chave o arquivo JSON - console.cloud.google.com
+Criar pasta "list" e outra pasta com o nome do perfio
+Criar pasta "videos"
+
+Pasta "profiles" - Informações e dados do perfio
+
