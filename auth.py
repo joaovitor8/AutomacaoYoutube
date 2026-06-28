@@ -1,32 +1,37 @@
 import os
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials          # Representa as credenciais OAuth salvas
+from google_auth_oauthlib.flow import InstalledAppFlow     # Gerencia o fluxo de login via navegador
+from google.auth.transport.requests import Request         # Usado para renovar o token expirado
 
-
+# Define o nível de acesso que o bot terá na conta do YouTube
+# "youtube" = acesso completo (upload, edição, agendamento)
 SCOPES = ["https://www.googleapis.com/auth/youtube"]
-CREDENTIALS_FILE = "credentials/client_secret.json"
-TOKEN_FILE = "token.json"
 
 
-# Função para obter as credenciais do usuário
-def get_credentials():
+def get_credentials(credentials_file: str, token_file: str):
+  # Cria a pasta "tokens/" se ainda não existir
+  os.makedirs("tokens", exist_ok=True)
+
   creds = None
 
-  # Se já existe um token salvo, carrega ele
-  if os.path.exists(TOKEN_FILE):
-    creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
+  # Se já existe um token salvo, carrega ele (evita abrir o navegador toda vez)
+  if os.path.exists(token_file):
+    creds = Credentials.from_authorized_user_file(token_file, SCOPES)
 
-  # Se não existe ou expirou, inicia o fluxo OAuth
+  # Verifica se as credenciais são inválidas ou inexistentes
   if not creds or not creds.valid:
+
     if creds and creds.expired and creds.refresh_token:
+      # Token expirado mas ainda tem refresh_token → renova automaticamente sem abrir o navegador
       creds.refresh(Request())
     else:
-      flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_FILE, SCOPES)
+      # Sem token salvo → abre o navegador para o usuário fazer login e autorizar o app
+      flow = InstalledAppFlow.from_client_secrets_file(credentials_file, SCOPES)
       creds = flow.run_local_server(port=0)
 
-    # Salva o token para não precisar logar toda vez
-    with open(TOKEN_FILE, "w") as token:
+    # Salva o token em disco para reutilizar nas próximas execuções
+    with open(token_file, "w") as token:
       token.write(creds.to_json())
 
-  return creds
+  return creds  # Retorna as credenciais válidas para o youtube_client usar
+

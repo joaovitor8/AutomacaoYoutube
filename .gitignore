@@ -2,8 +2,12 @@ __pycache__/
 .venv/
 
 credentials/
-list/
-videos/
-log/
 
-token.json
+list/astronautium
+list/outro_canal
+
+profiles/
+videos/
+
+tokens/
+log/

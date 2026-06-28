@@ -1,36 +1,24 @@
-LINKS_E_FIXO = """
-----------
 
-Welcome to Astronautium 🚀✨, your portal to the soundscapes of the infinite universe, where stars, black holes, and alien civilizations collide in deep cosmic melodies. 🌌🌠
 
-Journey through nebulae 🌈, interstellar abysses ⚫, distant planets 🌍, and other celestial bodies with my original instrumental compositions, created to evoke the mystery and grandeur of outer space. Each track is a sonic exploration of futuristic technologies, artificial intelligence, and invisible cosmic forces, a true musical odyssey into the unknown.
+def montar_descricao(frase_do_video: str, tags_do_video: list, perfil: dict) -> str:
+  # Junta as tags fixas do canal com as tags específicas do vídeo em uma única lista
+  # Exemplo: ["SpaceMusic", "Astronaut"] + ["nebula", "ambient"] → ["SpaceMusic", "Astronaut", "nebula", "ambient"]
+  todas_tags = perfil["tags_fixas"] + tags_do_video
 
-📌 New music and videos released regularly. Subscribe and activate the bell 🔔 to never miss a sonic journey through the cosmos.
-
-Join the community of stellar explorers and share your experiences and emotions through musical spacetime. 🚀🌟
-
-LINKS:
-Subscribe to the channel: https://www.youtube.com/@Astronautium
-Twitter: https://x.com/AstronautJonnes
-
-✨ Thank you for being part of this sonic odyssey. Your support keeps this universe expanding and helps create new musical constellations for all of us.
-"""
-
-TAGS_FIXAS = [
-  "SciFiMusic",
-  "SpaceAmbient",
-  "CosmicJourney",
-  "InstrumentalSciFi",
-  "SpaceMusic",
-  "Astronaut",
-]
-
-def montar_descricao(frase_do_video: str, tags_do_video: list) -> str:
-  todas_tags = TAGS_FIXAS + tags_do_video
+  # Transforma a lista de tags em uma string de hashtags separadas por vírgula
+  # Exemplo: ["SpaceMusic", "nebula"] → "#SpaceMusic, #nebula"
   hashtags = ", ".join(f"#{tag}" for tag in todas_tags)
 
-  descricao = f"{frase_do_video}\n{LINKS_E_FIXO}\n{hashtags}"
+  # Monta a descrição final combinando as três partes:
+  # 1. Frase única do vídeo (vem do CSV)
+  # 2. Texto fixo do canal (vem do perfil)
+  # 3. Hashtags (geradas acima)
+  descricao = f"{frase_do_video}\n{perfil['descricao_fixa']}\n{hashtags}"
   return descricao
 
-def montar_tags(tags_do_video: list) -> list:
-  return TAGS_FIXAS + tags_do_video
+
+def montar_tags(tags_do_video: list, perfil: dict) -> list:
+  # Retorna a lista completa de tags: fixas do canal + específicas do vídeo
+  # Essa lista é enviada separadamente para a API do YouTube (diferente das hashtags da descrição)
+  return perfil["tags_fixas"] + tags_do_video
+
