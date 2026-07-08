@@ -1,6 +1,8 @@
-Criar pasta "credentials" e pegar a chave o arquivo JSON - console.cloud.google.com
-Criar pasta "list" e outra pasta com o nome do perfio
-Criar pasta "videos"
+Pasta "credentials": Pegar a chave, o arquivo JSON - console.cloud.google.com
 
-Pasta "profiles" - Informações e dados do perfio
+Pasta "list": Criar outra pasta com o nome do perfio e colocar o arquivo agenda.csv lá
+
+Pasta "videos": Colocar os videos
+
+Pasta "profiles": Informações e dados do perfio
 

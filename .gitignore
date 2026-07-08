@@ -1,12 +1,14 @@
 __pycache__/
 .venv/
 
-credentials/
+credentials/*
+!credentials/client_secret-exemplo.json
 
-list/astronautium
-list/outro_canal
+list/*
+!list/template-agenda.csv
 
-profiles/astronautium.py
+profiles/*
+!profiles/exemplo.py
 
 videos/
 
