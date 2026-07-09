@@ -5,7 +5,7 @@ credentials/*
 !credentials/client_secret-exemplo.json
 
 list/*
-!list/template-agenda.csv
+!list/template-agendar.csv
 
 profiles/*
 !profiles/exemplo.py
@@ -13,4 +13,4 @@ profiles/*
 videos/
 
 tokens/
-log/
+logs/
