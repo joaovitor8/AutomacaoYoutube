@@ -2,7 +2,7 @@ import datetime
 from googleapiclient.http import MediaFileUpload  # Prepara o arquivo de vídeo para envio via API
 
 
-def agendar_video(youtube, arquivo: str, titulo: str, descricao: str, tags: list, data_publicacao: str, category_id: str = "10"):
+def agendar_video(youtube, arquivo: str, titulo: str, descricao: str, tags: list, data_publicacao: str, category_id: str = "10", conteudo_ia: bool = False):
   # Converte a data do formato ISO (ex: "2026-08-01T18:00:00")
   # para o formato UTC exigido pela API do YouTube (ex: "2026-08-01T18:00:00.000Z")
   data_utc = datetime.datetime.fromisoformat(data_publicacao).strftime(
@@ -18,8 +18,9 @@ def agendar_video(youtube, arquivo: str, titulo: str, descricao: str, tags: list
       "categoryId": category_id   # Categoria do YouTube (10 = Music, 22 = People & Blogs)
     },
     "status": {
-      "privacyStatus": "private",  # Sobe como privado para não aparecer antes da hora
-      "publishAt": data_utc        # Data em que o YouTube tornará o vídeo público automaticamente
+      "privacyStatus": "private",           # Sobe como privado para não aparecer antes da hora
+      "publishAt": data_utc,                # Data em que o YouTube tornará o vídeo público automaticamente
+      "containsSyntheticMedia": conteudo_ia  # Declara se o vídeo tem conteúdo alterado/gerado por IA
     }
   }
 
@@ -74,3 +75,12 @@ def adicionar_a_playlist(youtube, video_id: str, playlist_id: str):
   # Chama a API para inserir o vídeo como item da playlist
   youtube.playlistItems().insert(part="snippet", body=body).execute()
   print(f"Adicionado à playlist: {playlist_id}")
+
+
+def definir_thumbnail(youtube, video_id: str, thumbnail_path: str):
+  # Prepara a imagem para envio (jpg/png, até 2MB pelas regras do YouTube)
+  media = MediaFileUpload(thumbnail_path)
+
+  # Substitui a miniatura do vídeo pela imagem enviada
+  youtube.thumbnails().set(videoId=video_id, media_body=media).execute()
+  print(f"Thumbnail definida: {thumbnail_path}")

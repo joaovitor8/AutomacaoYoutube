@@ -11,6 +11,7 @@ profiles/*
 !profiles/_nome-canal.py
 
 videos/
+imagens/
 
 tokens/
 logs/

@@ -5,6 +5,8 @@
     "frase": "Frase muito foda.",
     "tags_extras": ["tag", "tag", "tag"],
     "playlist_id": "PLaaaaaaaaaaaaaaaaaaaaaaaa",
+    "thumbnail": "imagens/thumbnail.png",
+    "conteudo_ia": true,
     "data_publicacao": "2026-11-12T03:00:00",
     "status": "pending"
   }

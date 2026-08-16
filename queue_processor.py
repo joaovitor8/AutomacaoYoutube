@@ -2,7 +2,7 @@ import json     # Lê e escreve arquivos JSON (a fila de vídeos)
 import os       # Verifica se arquivos existem no disco
 import time     # Adiciona pausa entre uploads
 from youtube_client import get_youtube_client       # Cria a conexão com a API do YouTube
-from uploader import agendar_video, adicionar_a_playlist  # Faz o upload, agendamento e adição à playlist
+from uploader import agendar_video, adicionar_a_playlist, definir_thumbnail  # Faz o upload, agendamento, playlist e thumbnail
 from logger import iniciar_log, registrar           # Cria e escreve no arquivo de log
 from description_template import montar_descricao, montar_tags  # Monta descrição e tags
 
@@ -62,7 +62,8 @@ def processar_fila(perfil: dict):
         descricao=descricao_completa,
         tags=tags_completas,
         data_publicacao=linha["data_publicacao"],
-        category_id=perfil["category_id"]
+        category_id=perfil["category_id"],
+        conteudo_ia=linha.get("conteudo_ia", False)  # Opcional — declara vídeo com conteúdo gerado/alterado por IA
       )
 
       linha["status"] = "done"       # Marca como concluído
@@ -79,6 +80,19 @@ def processar_fila(perfil: dict):
         except Exception as e:
           # Falha na playlist não desfaz o upload já feito — só registra o aviso
           registrar(log_path, f"AVISO: falha ao adicionar '{titulo}' à playlist — {str(e)}")
+
+      # Thumbnail também é opcional — só define se o vídeo tiver o campo no JSON
+      thumbnail = linha.get("thumbnail")
+      if thumbnail:
+        if os.path.exists(thumbnail):
+          try:
+            definir_thumbnail(youtube, video_id, thumbnail)
+            registrar(log_path, f"Thumbnail definida: {thumbnail}")
+          except Exception as e:
+            # Falha na thumbnail também não desfaz o upload
+            registrar(log_path, f"AVISO: falha ao definir thumbnail de '{titulo}' — {str(e)}")
+        else:
+          registrar(log_path, f"AVISO: thumbnail não encontrada — {thumbnail}")
 
     except Exception as e:
       # Se qualquer erro ocorrer durante o upload, marca como error e continua
