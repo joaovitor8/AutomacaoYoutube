@@ -2,13 +2,13 @@ __pycache__/
 .venv/
 
 credentials/*
-!credentials/client_secret-exemplo.json
+!credentials/_client_secret-nome_canal.json
 
-list/*
-!list/template-agendar.csv
+lista/*
+!lista/_nome-canal
 
 profiles/*
-!profiles/exemplo.py
+!profiles/_nome-canal.py
 
 videos/
 

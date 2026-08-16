@@ -1,0 +1,10 @@
+[
+  {
+    "arquivo": "videos/teste.mp4",
+    "titulo": "O Titulo - Music",
+    "frase": "Frase muito foda.",
+    "tags_extras": ["tag", "tag", "tag"],
+    "data_publicacao": "2026-11-12T03:00:00",
+    "status": "pending"
+  }
+]

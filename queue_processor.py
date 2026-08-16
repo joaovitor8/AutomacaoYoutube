@@ -1,4 +1,4 @@
-import csv      # Lê e escreve arquivos CSV (a fila de vídeos)
+import json     # Lê e escreve arquivos JSON (a fila de vídeos)
 import os       # Verifica se arquivos existem no disco
 import time     # Adiciona pausa entre uploads
 from youtube_client import get_youtube_client       # Cria a conexão com a API do YouTube
@@ -14,10 +14,10 @@ def processar_fila(perfil: dict):
   # Cria o cliente autenticado da API usando as credenciais do perfil
   youtube = get_youtube_client(perfil["credentials_file"], perfil["token_file"])
 
-  # Abre o CSV da fila e carrega todas as linhas como lista de dicionários
-  # Cada linha vira um dict: {"titulo": "...", "status": "pending", ...}
+  # Abre o JSON da fila e carrega todos os itens como lista de dicionários
+  # Cada item já é um dict: {"titulo": "...", "status": "pending", ...}
   with open(perfil["queue_file"], "r", encoding="utf-8") as f:
-    linhas = list(csv.DictReader(f))
+    linhas = json.load(f)
 
   # Filtra apenas as linhas com status "pending"
   pendentes = [l for l in linhas if l["status"] == "pending"]
@@ -38,15 +38,15 @@ def processar_fila(perfil: dict):
     if not os.path.exists(arquivo):
       registrar(log_path, f"ERRO: Arquivo não encontrado — {arquivo}")
       linha["status"] = "error"
-      salvar_fila(linhas, perfil["queue_file"])  # Salva o erro no CSV
+      salvar_fila(linhas, perfil["queue_file"])  # Salva o erro no JSON
       continue  # Passa para o próximo vídeo
 
     try:
       registrar(log_path, f"Iniciando upload: {titulo}")
 
-      # Tags extras vêm separadas por ";" no CSV → transforma em lista
-      # Exemplo: "ambient;nebula;scifi" → ["ambient", "nebula", "scifi"]
-      tags_extras = linha["tags_extras"].split(";")
+      # Tags extras já vêm como lista no JSON
+      # Exemplo: ["ambient", "nebula", "scifi"]
+      tags_extras = linha["tags_extras"]
 
       # Monta a descrição completa: frase do vídeo + texto fixo do canal + hashtags
       descricao_completa = montar_descricao(linha["frase"], tags_extras, perfil)
@@ -82,14 +82,9 @@ def processar_fila(perfil: dict):
 
 
 def salvar_fila(linhas: list, queue_file: str):
-  # Pega os nomes das colunas a partir das chaves do primeiro dicionário
-  campos = list(linhas[0].keys())
-
-  # Reescreve o CSV inteiro com os dados atualizados
-  with open(queue_file, "w", newline="", encoding="utf-8") as f:
-    writer = csv.DictWriter(f, fieldnames=campos)
-    writer.writeheader()   # Escreve o cabeçalho (nomes das colunas)
-    writer.writerows(linhas)  # Escreve todas as linhas
+  # Reescreve o JSON inteiro com os dados atualizados
+  with open(queue_file, "w", encoding="utf-8") as f:
+    json.dump(linhas, f, indent=2, ensure_ascii=False)  # Salva formatado e com acentos legíveis
 
 
 def resumo(linhas: list, log_path: str):
@@ -97,4 +92,3 @@ def resumo(linhas: list, log_path: str):
   done = sum(1 for l in linhas if l["status"] == "done")    # Quantos foram enviados
   erros = sum(1 for l in linhas if l["status"] == "error")  # Quantos falharam
   registrar(log_path, f"Resumo: {done}/{total} enviados | {erros} erro(s)")
-
