@@ -2,7 +2,7 @@ import json     # Lê e escreve arquivos JSON (a fila de vídeos)
 import os       # Verifica se arquivos existem no disco
 import time     # Adiciona pausa entre uploads
 from youtube_client import get_youtube_client       # Cria a conexão com a API do YouTube
-from uploader import agendar_video                  # Faz o upload e agendamento do vídeo
+from uploader import agendar_video, adicionar_a_playlist  # Faz o upload, agendamento e adição à playlist
 from logger import iniciar_log, registrar           # Cria e escreve no arquivo de log
 from description_template import montar_descricao, montar_tags  # Monta descrição e tags
 
@@ -68,6 +68,17 @@ def processar_fila(perfil: dict):
       linha["status"] = "done"       # Marca como concluído
       linha["video_id"] = video_id   # Salva o ID retornado pela API
       registrar(log_path, f"OK: {titulo} → https://youtube.com/watch?v={video_id}")
+
+      # Playlist é opcional: pode vir no próprio vídeo (linha) ou como padrão do canal (perfil)
+      # Se nenhuma das duas existir, o vídeo simplesmente não entra em playlist nenhuma
+      playlist_id = linha.get("playlist_id") or perfil.get("playlist_id")
+      if playlist_id:
+        try:
+          adicionar_a_playlist(youtube, video_id, playlist_id)
+          registrar(log_path, f"Adicionado à playlist: {playlist_id}")
+        except Exception as e:
+          # Falha na playlist não desfaz o upload já feito — só registra o aviso
+          registrar(log_path, f"AVISO: falha ao adicionar '{titulo}' à playlist — {str(e)}")
 
     except Exception as e:
       # Se qualquer erro ocorrer durante o upload, marca como error e continua

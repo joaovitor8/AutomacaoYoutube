@@ -56,5 +56,21 @@ def agendar_video(youtube, arquivo: str, titulo: str, descricao: str, tags: list
   print(f"ID do vídeo: {video_id}")
   print(f"Link: https://youtube.com/watch?v={video_id}")
 
-  return video_id  # Retorna o ID para ser salvo no CSV pelo queue_processor
+  return video_id  # Retorna o ID para ser salvo no JSON pelo queue_processor
 
+
+def adicionar_a_playlist(youtube, video_id: str, playlist_id: str):
+  # Monta o corpo da requisição: qual vídeo entra em qual playlist
+  body = {
+    "snippet": {
+      "playlistId": playlist_id,
+      "resourceId": {
+        "kind": "youtube#video",
+        "videoId": video_id
+      }
+    }
+  }
+
+  # Chama a API para inserir o vídeo como item da playlist
+  youtube.playlistItems().insert(part="snippet", body=body).execute()
+  print(f"Adicionado à playlist: {playlist_id}")
